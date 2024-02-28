@@ -22,7 +22,6 @@ final tripRepositoryProvider = Provider<TripRepository>((ref) {
   return TripRepositoryImpl(localDatasource);
 });
 
-
 final addTripProvider = Provider<AddTrip>((ref) {
   final repository = ref.read(tripRepositoryProvider);
 
@@ -41,7 +40,8 @@ final deleteTripsProvider = Provider<DeleteTrip>((ref) {
   return DeleteTrip(repository);
 });
 
-final tripListNotifierProvider =  StateNotifierProvider<TripListNotifier, AsyncValue<List<Trip>>>((ref) {
+final tripListNotifierProvider =
+    StateNotifierProvider<TripListNotifier, AsyncValue<List<Trip>>>((ref) {
   final getTrips = ref.read(getTripsProvider);
   final addTrip = ref.read(addTripProvider);
   final deleteTrip = ref.read(deleteTripsProvider);
@@ -54,17 +54,22 @@ class TripListNotifier extends StateNotifier<AsyncValue<List<Trip>>> {
   final DeleteTrip _deleteTrip;
 
   TripListNotifier(this._getTrips, this._addTrip, this._deleteTrip)
-      : super(const AsyncData([]));
+      : super(const AsyncValue.loading()) {
+    loadTrips();
+  }
 
   Future<void> addNewTrip(Trip trip) async {
-    _addTrip(trip);
+    await _addTrip(trip);
   }
 
   Future<void> removeTrip(int tripId) async {
     _deleteTrip(tripId);
   }
 
-  Future<List<Trip>> loadTrips() async {
-    return _getTrips.call();
+  Future<void> loadTrips() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final tripsOrFailure = await _getTrips();
+    tripsOrFailure.fold((error) => state = const AsyncData([]),
+        (trips) => state = AsyncData(trips));
   }
 }

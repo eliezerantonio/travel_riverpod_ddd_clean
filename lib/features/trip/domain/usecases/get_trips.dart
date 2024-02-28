@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:dartz/dartz.dart';
+
+import '../../../../core/failures.dart';
 import '../entities/trip.dart';
 import '../repositories/trip_repository.dart';
 
@@ -8,7 +11,7 @@ class GetTrips {
 
   GetTrips(this.repository);
 
-  FutureOr<List<Trip>> call() {
-    return repository.getTrip();
+  Future<Either<Failure, List<Trip>>> call() {
+    return repository.getTrips();
   }
 }

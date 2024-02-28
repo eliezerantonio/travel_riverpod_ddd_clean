@@ -1,0 +1,7 @@
+{
+      "conventionalCommits.scopes": [
+            "domain and data dataLayer implementation",
+            "domain-data",
+            "provider"
+      ]
+}
